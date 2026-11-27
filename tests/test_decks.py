@@ -25,7 +25,7 @@ STRUCTURE = {
         {"type": "title", "title": "Weekly report", "subtitle": "Week 47"},
         {"type": "bullets", "title": "What shipped", "items": ["pdfforge", "slideforge", "qrforge"]},
         {"type": "text", "title": "Notes", "paragraphs": ["First note.", "Second note."]},
-        {"type": "table", "title": "Numbers", "headers": ["Tool", "Tests"], "rows": [["pdfforge", 24], ["slideforge", 22]]},
+        {"type": "table", "title": "Numbers", "headers": ["Tool", "Tests"], "rows": [["pdfforge", 27], ["slideforge", 23]]},
     ],
 }
 
@@ -39,7 +39,7 @@ Week 47
 ## Numbers
 | Tool | Tests |
 | ---- | ----- |
-| pdfforge | 24 |
+| pdfforge | 27 |
 
 ## Screenshot
 ![The new deck](shot.png)
@@ -142,7 +142,7 @@ class TestSlideforge(unittest.TestCase):
         self.assertEqual(structure["slides"][0]["subtitle"], "Week 47")
         self.assertEqual(structure["slides"][1]["items"], ["pdfforge", "slideforge"])
         self.assertEqual(structure["slides"][2]["headers"], ["Tool", "Tests"])
-        self.assertEqual(structure["slides"][2]["rows"], [["pdfforge", "24"]])
+        self.assertEqual(structure["slides"][2]["rows"], [["pdfforge", "27"]])
         self.assertEqual(structure["slides"][3]["image"], self.img)
 
     def test_parse_markdown_text_slide(self):
