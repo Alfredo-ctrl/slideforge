@@ -1,4 +1,4 @@
-"""Minimal MCP server over stdio. No dependencies, plain JSON-RPC.
+"""MCP server over stdio. Hand-rolled JSON-RPC, no MCP SDK.
 
 Tools: create_deck, create_deck_from_markdown, describe_deck, list_themes.
 """
@@ -52,19 +52,19 @@ TOOLS = [
 ]
 
 
-def _text(payload):
+def _text_result(payload):
     return {"content": [{"type": "text", "text": json.dumps(payload)}]}
 
 
-def _call(name, args):
+def _dispatch_tool(name, args):
     if name == "list_themes":
-        return _text(list_themes())
+        return _text_result(list_themes())
     if name == "describe_deck":
-        return _text(describe(args["input"]))
+        return _text_result(describe(args["input"]))
     if name == "create_deck":
-        return _text(build_deck(args["structure"], args["output"], args.get("theme", "light")))
+        return _text_result(build_deck(args["structure"], args["output"], args.get("theme", "light")))
     if name == "create_deck_from_markdown":
-        return _text(from_markdown(args["markdown"], args["output"], args.get("theme", "light")))
+        return _text_result(from_markdown(args["markdown"], args["output"], args.get("theme", "light")))
     raise ValueError(f"unknown tool '{name}'")
 
 
@@ -94,7 +94,7 @@ def run():
             resp = {"result": {"tools": TOOLS}}
         elif method == "tools/call":
             try:
-                resp = {"result": _call(req["params"]["name"], req["params"].get("arguments", {}))}
+                resp = {"result": _dispatch_tool(req["params"]["name"], req["params"].get("arguments", {}))}
             except Exception as e:
                 resp = {"result": {"content": [{"type": "text", "text": json.dumps({"error": str(e)})}], "isError": True}}
         else:

@@ -1,11 +1,7 @@
 """Markdown to deck structure.
 
-Conventions, kept small on purpose:
-- `# Title` at the top: deck title, next paragraph is the subtitle.
-- `## Slide title`: starts a slide.
-- `- item`: bullets. Plain lines: paragraphs.
-- `![caption](path)`: image slide (caption = alt text).
-- `| a | b |` rows with a `|---|---|` line: table slide.
+`# Title` (+ subtitle on the next line), `## Slide` starts a slide,
+`- item` bullets, `![caption](path)` image slide, `| a | b |` table rows.
 """
 
 import re

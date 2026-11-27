@@ -1,4 +1,4 @@
-"""slideforge command line. Built for agents: JSON in, JSON out."""
+"""slideforge command line. JSON in, JSON out."""
 
 import argparse
 import json
@@ -7,12 +7,12 @@ import sys
 from . import __version__, build_deck, describe, from_markdown, list_themes
 
 
-def _fail(msg):
+def _exit_error(msg):
     print(json.dumps({"error": msg}), file=sys.stderr)
     raise SystemExit(1)
 
 
-def _ok(payload):
+def _print_result(payload):
     print(json.dumps(payload))
 
 
@@ -24,20 +24,20 @@ def cmd_create(args):
         else:
             result = build_deck(json.loads(args.structure), args.output, args.theme)
     except (ValueError, FileNotFoundError, json.JSONDecodeError, OSError) as e:
-        _fail(str(e))
-    _ok(result)
+        _exit_error(str(e))
+    _print_result(result)
 
 
 def cmd_describe(args):
     try:
         result = describe(args.input)
-    except ValueError as e:
-        _fail(str(e))
-    _ok(result)
+    except (ValueError, OSError) as e:
+        _exit_error(str(e))
+    _print_result(result)
 
 
 def cmd_themes(args):
-    _ok(list_themes())
+    _print_result(list_themes())
 
 
 def cmd_mcp(args):
@@ -47,7 +47,7 @@ def cmd_mcp(args):
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(prog="slideforge", description="Slide decks for AI agents.")
+    parser = argparse.ArgumentParser(prog="slideforge", description="Build .pptx decks from JSON or Markdown.")
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     sub = parser.add_subparsers(dest="command", required=True)
 

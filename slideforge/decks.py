@@ -1,18 +1,20 @@
-"""Build .pptx decks from a structure dict. 16:9, blank layout, drawn shapes.
+"""Build .pptx decks from a structure dict. 16:9.
 
 A deck is a dict: title, author, theme, slides. Each slide has a "type":
-title, bullets, text, image or table. No templates, no GUI, just python-pptx.
+title, bullets, text, image or table.
 """
 
 import os
 
 from pptx import Presentation
 from pptx.dml.color import RGBColor
+from pptx.enum.shapes import MSO_SHAPE
 from pptx.enum.text import PP_ALIGN
 from pptx.util import Inches, Pt
 
 from .markdown import parse_markdown
 
+# Colors from Tailwind's default palette.
 THEMES = {
     "light": {"bg": "FFFFFF", "title": "1A1A2E", "body": "333333", "accent": "2563EB", "muted": "6B7280"},
     "dark": {"bg": "111827", "title": "F9FAFB", "body": "D1D5DB", "accent": "60A5FA", "muted": "9CA3AF"},
@@ -21,6 +23,7 @@ THEMES = {
 
 _SLIDE_W = Inches(13.333)
 _SLIDE_H = Inches(7.5)
+EMU_PER_INCH = 914400
 _MARGIN = Inches(0.7)
 
 _TYPES = ("title", "bullets", "text", "image", "table")
@@ -43,7 +46,7 @@ def _theme(name):
 
 
 def _bg(slide, color):
-    shape = slide.shapes.add_shape(1, 0, 0, _SLIDE_W, _SLIDE_H)  # plain rectangle
+    shape = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, 0, 0, _SLIDE_W, _SLIDE_H)
     shape.fill.solid()
     shape.fill.fore_color.rgb = _rgb(color)
     shape.line.fill.background()
@@ -70,8 +73,8 @@ def _para(frame, text, size, color, bold=False, first=False, align=PP_ALIGN.LEFT
     return para
 
 
-def _accent_bar(slide, theme):
-    bar = slide.shapes.add_shape(1, _MARGIN, Inches(1.15), Inches(0.9), Pt(4))
+def _accent_bar(slide, theme, x=_MARGIN, y=Inches(1.15), w=Inches(0.9), h=Pt(4)):
+    bar = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, x, y, w, h)
     bar.fill.solid()
     bar.fill.fore_color.rgb = _rgb(theme["accent"])
     bar.line.fill.background()
@@ -95,10 +98,7 @@ def _title_slide(prs, data, theme):
     _para(frame, data["title"], 44, theme["title"], bold=True, first=True, align=PP_ALIGN.CENTER, space_after=10)
     if data.get("subtitle"):
         _para(frame, data["subtitle"], 22, theme["muted"], align=PP_ALIGN.CENTER)
-    bar = slide.shapes.add_shape(1, Inches(6.0), Inches(2.1), Inches(1.3), Pt(5))
-    bar.fill.solid()
-    bar.fill.fore_color.rgb = _rgb(theme["accent"])
-    bar.line.fill.background()
+    _accent_bar(slide, theme, Inches(6.0), Inches(2.1), Inches(1.3), Pt(5))
 
 
 def _bullets_slide(prs, data, theme):
@@ -133,7 +133,7 @@ def _image_slide(prs, data, theme):
     _slide_title(slide, data["title"], theme)
     with Image.open(path) as img:
         w, h = _fit_box(img.width, img.height, 11.9, 4.9)
-    slide.shapes.add_picture(path, Inches((13.333 - w) / 2), Inches(1.7), width=Inches(w), height=Inches(h))
+    slide.shapes.add_picture(path, Inches((_SLIDE_W / EMU_PER_INCH - w) / 2), Inches(1.7), width=Inches(w), height=Inches(h))
     if data.get("caption"):
         frame = _textbox(slide, _MARGIN, Inches(6.7), _SLIDE_W - 2 * _MARGIN, Inches(0.5))
         _para(frame, data["caption"], 16, theme["muted"], first=True, align=PP_ALIGN.CENTER, space_after=0)
@@ -173,10 +173,8 @@ def _check_slide(data, index):
     kind = data.get("type")
     if kind not in _TYPES:
         raise ValueError(f"slide {index + 1}: unknown type '{kind}'. Types: {', '.join(_TYPES)}")
-    if kind != "title" and not data.get("title"):
+    if not data.get("title"):
         raise ValueError(f"slide {index + 1}: '{kind}' slides need a 'title'")
-    if kind == "title" and not data.get("title"):
-        raise ValueError(f"slide {index + 1}: 'title' slides need a 'title'")
     if kind == "bullets":
         items = data.get("items")
         if not isinstance(items, list) or not items:
@@ -251,7 +249,7 @@ def describe(path):
         "slides": len(prs.slides),
         "title": title,
         "author": prs.core_properties.author or "",
-        "width_in": round(prs.slide_width / 914400, 3),
-        "height_in": round(prs.slide_height / 914400, 3),
+        "width_in": round(prs.slide_width / EMU_PER_INCH, 3),
+        "height_in": round(prs.slide_height / EMU_PER_INCH, 3),
         "size_bytes": os.path.getsize(path),
     }
