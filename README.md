@@ -1,8 +1,8 @@
 # slideforge
 
-Slide decks for AI agents. No GUI, no account, no vendor lock-in: a CLI, a Python API and an MCP server that any agent can drive — Muse, Antigravity, Codex, Claude Code, or a local model.
+Build .pptx decks from a JSON structure or a Markdown file — from the terminal, from Python, or over MCP.
 
-It builds .pptx decks from a JSON structure or a Markdown file, with python-pptx, so install the package and you are set.
+It builds .pptx decks with python-pptx. Decks are 16:9.
 
 ## Install
 
@@ -25,7 +25,7 @@ slideforge create -o talk.pptx --theme dark --structure '{
   "slides": [
     {"type": "title", "title": "Weekly report", "subtitle": "Week 47"},
     {"type": "bullets", "title": "What shipped", "items": ["pdfforge", "slideforge", "qrforge"]},
-    {"type": "table", "title": "Numbers", "headers": ["Tool", "Tests"], "rows": [["pdfforge", 24], ["slideforge", 22]]}
+    {"type": "table", "title": "Numbers", "headers": ["Tool", "Tests"], "rows": [["pdfforge", 27], ["slideforge", 23]]}
   ]
 }'
 
@@ -47,8 +47,8 @@ Week 47
 ## Numbers
 | Tool | Tests |
 | ---- | ----- |
-| pdfforge | 24 |
-| slideforge | 22 |
+| pdfforge | 27 |
+| slideforge | 23 |
 
 ## Screenshot
 ![The new deck](shot.png)
@@ -84,8 +84,22 @@ describe("talk.pptx")  # slides, title, size, dimensions
 
 ## MCP server
 
+Any MCP client can use slideforge as tools:
+
 ```sh
 slideforge mcp
 ```
 
-Tools: `create_deck`, `create_deck_from_markdown`, `describe_deck`, `list_themes`.
+It speaks MCP over stdio and exposes `create_deck`, `create_deck_from_markdown`, `describe_deck`, `list_themes`. Example client config:
+
+```json
+{
+  "mcpServers": {
+    "slideforge": {"command": "slideforge", "args": ["mcp"]}
+  }
+}
+```
+
+## License
+
+See [LICENSE](LICENSE).

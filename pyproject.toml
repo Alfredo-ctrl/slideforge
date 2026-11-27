@@ -5,14 +5,25 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "slideforge"
 version = "0.1.0"
-description = "Slide decks built for AI agents. CLI, Python API and MCP server."
+description = "Build .pptx decks from JSON or Markdown."
 readme = "README.md"
 license = {text = "MIT"}
 authors = [{name = "Alfredo Ramos"}]
 requires-python = ">=3.10"
+keywords = ["pptx", "slides", "cli", "mcp"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Utilities",
+]
 dependencies = [
     "python-pptx>=1",
+    "Pillow>=10",
 ]
+
+[project.urls]
+Homepage = "https://github.com/Alfredo-ctrl/slideforge"
+Repository = "https://github.com/Alfredo-ctrl/slideforge"
 
 [project.scripts]
 slideforge = "slideforge.cli:main"
