@@ -14,8 +14,8 @@ info = build_deck({
     "slides": [
         {"type": "title", "title": "Weekly report", "subtitle": "Week 47"},
         {"type": "bullets", "title": "What shipped", "items": ["pdfforge", "slideforge", "qrforge"]},
-        {"type": "table", "title": "Numbers", "headers": ["Tool", "Tests"], "rows": [["pdfforge", 24], ["slideforge", 22]]},
-        {"type": "text", "title": "Next", "paragraphs": ["chartforge is next in the queue."]},
+        {"type": "table", "title": "Numbers", "headers": ["Tool", "Tests"], "rows": [["pdfforge", 27], ["slideforge", 23]]},
+        {"type": "text", "title": "Next", "paragraphs": ["That's next."]},
     ],
 }, out, theme="dark")
 print(info)
