@@ -7,7 +7,7 @@ It builds .pptx decks from a JSON structure or a Markdown file, with python-pptx
 ## Install
 
 ```sh
-pip install slideforge
+pip install git+https://github.com/Alfredo-ctrl/slideforge.git
 ```
 
 ## Use it from the terminal
